@@ -1,0 +1,12 @@
+{% if current_user.is_authenticated %}
+  <h2>Hello, {{current_user.username}}!</h2>
+{% else %}
+  <h2>You're not signed in!</h2>
+{% endif %}
+
+{% for post in posts %}
+  <h1>{{ post.title }}</h1>
+  <h3>{{ post.content }}</h3>
+  <p>Submitted by {{post.author}}</p>
+  <br><br>
+{% endfor %}

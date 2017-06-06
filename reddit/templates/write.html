@@ -1,0 +1,22 @@
+{% if current_user.is_authenticated %}
+<form action = "{{ url_for('write') }}" name="write" method="POST">
+<div class="form-group">
+  <label for="usr">Tag:</label>
+  <input name="tag" type="text" class="form-control" placeholder="Tag">
+</div>
+<br>
+<div class="form-group">
+  <label for="usr">Title:</label>
+  <input name="title" class="form-control" placeholder="Title" type="text">
+</div>
+<br>
+<div class="form-group">
+  <label for="usr">Content:</label>
+  <textarea name="content" class="form-control" row="10" placeholder="Content" type="text"></textarea>
+</div>
+<br>
+<button type="submit" class="btn btn-secondary" >Submit Post</button>
+</form>
+{% else %}
+<p>Sign up or sign in to add a post!</p>
+{% endif %}

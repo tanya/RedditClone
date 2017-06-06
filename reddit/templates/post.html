@@ -1,0 +1,21 @@
+<h1>{{ post.title }}</h1>
+<h3>{{ post.content }}</h3>
+<p>Submitted by {{ post.author }}</p>
+
+{% if current_user.is_authenticated %}
+<h2>Submit a Comment:</h2>
+<form action="{{ url_for('post', post_id=post.id) }}" name="write" method="POST">
+  <textarea name="content" class="form-control" placeholder="Content" type="text"></textarea>
+  <br>
+  <button class="btn btn-secondary" type="submit">Submit Comment</button>
+</form>
+{% else %}
+<p><b>Sign up or sign in to post a comment!</b></p>
+{% endif %}
+
+<h2>Comments:</h2>
+{% for comment in comments %}
+  <h1>{{ comment.title }}</h1>
+  <h3>{{ comment.content }}</h3>
+  <p>Submitted by {{ comment.author }}</p>
+{% endfor %}
