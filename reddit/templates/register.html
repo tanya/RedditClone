@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <form class="form-inline" action="{{ url_for('register') }}" name="register" method="POST">
   <div class="form-group">
     <input class="form-control" name="email" placeholder="Email" type="text">
@@ -14,3 +16,4 @@
 <input name="login_or_signup" class="btn btn-secondary"type="submit" value="login">
 <input name="login_or_signup" class="btn btn-secondary" type="submit" value="signup">
 </form>
+{% endblock %}

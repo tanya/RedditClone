@@ -1,5 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
 <h1>{{ post.title }}</h1>
 <h3>{{ post.content }}</h3>
+
+{% if current_user.is_authenticated %}
+<br><br>
+<form action="{{ url_for('post', post_id=post.id) }}" method="post">
+  <button class="" style="background-color: Transparent; border: none;" name="selection" type="submit" value="post_like">
+    <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+  </button>
+{% endif %}
+
+{% if post.num_likes != 1 %}
+  <p>{{ post.num_likes }} likes </p>
+{% else %}
+  <p>{{ post.num_likes }} like </p>
+{% endif %}
+
+{% if current_user.is_authenticated %}
+  <button class="" style="background-color: Transparent; border: none;" name="selection" type="submit" value="post_dislike">
+    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+  </button>
+</form>
+<br>
+{% endif %}
+
 <p>Submitted by {{ post.author }}</p>
 
 {% if current_user.is_authenticated %}
@@ -19,3 +44,4 @@
   <h3>{{ comment.content }}</h3>
   <p>Submitted by {{ comment.author }}</p>
 {% endfor %}
+{% endblock %}

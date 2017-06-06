@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+
 {% if current_user.is_authenticated %}
   <h2>Hello, {{current_user.username}}!</h2>
 {% else %}
@@ -10,3 +13,4 @@
   <p>Submitted by {{post.author}}</p>
   <br><br>
 {% endfor %}
+{% endblock %}

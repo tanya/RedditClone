@@ -1,7 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
 <h1>It works! Tag is {{ tag }}</h1>
 {% for post in posts %}
   <br><br>
   <b>{{ post.title }}</b>
   {{ post.author }}
 {% endfor %}
-
+{% endblock %}
