@@ -103,8 +103,40 @@ def post(post_id):
         comments = CommentDB.query.filter_by(post_id=post_id).all()
         return render_template('post.html', post=post, comments=comments)
     if request.method == 'POST':
-        #content of comment
+        #Adding to LikesDB - selection
+        selection = request.form.get('selection')
+        #content of comment or post
         content = request.form.get('content')
+
+        if selection is not None and selection.startswith("post"):
+            like_type=True
+            if selection == 'post_dislike':
+                like_type=False
+
+            #check for duplicate like
+            like = LikeDB.query.filter_by(username=current_user.username, post_id=post_id).first()
+
+            if like is not None and like.like_type is like_type:
+                return redirect(url_for('post', post_id=post_id))
+
+            if like is None:
+                like = LikeDB(username=current_user.username, post_or_comment=1, post_id=post_id, like_type=like_type)
+                print like_type
+                db.session.add(like)
+                db.session.commit()
+
+            #update if new type of like
+            like.like_type = like_type
+            #update the posts' number of likes
+            post = PostDB.query.filter_by(id=post_id).first()
+            if like_type:
+                post.num_likes += 1
+                print post.num_likes
+            else:
+                post.num_likes -= 1
+            db.session.commit()
+            return redirect(url_for('post', post_id=post_id))
+
         author = current_user.username
         time = datetime.now()
         comment = CommentDB(content=content, author=author, post_id=post_id, num_likes=0, time=time)
