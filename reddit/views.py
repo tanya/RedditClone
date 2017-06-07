@@ -96,12 +96,14 @@ def tag(tag_name):
 
 @app.route('/posts/<post_id>', methods=['GET','POST'])
 def post(post_id):
+
     if request.method == 'GET':
         post = PostDB.query.filter_by(id=post_id).first()
         if post is None:
             return render_template('error.html', error='Looks like that post doesn\'t exist.')
         comments = CommentDB.query.filter_by(post_id=post_id).all()
         return render_template('post.html', post=post, comments=comments)
+
     if request.method == 'POST':
         #Adding to LikesDB - selection
         selection = request.form.get('selection')
@@ -137,12 +139,62 @@ def post(post_id):
             db.session.commit()
             return redirect(url_for('post', post_id=post_id))
 
+        elif selection is not None and selection.startswith("comment"):
+            opposite_vote = False
+            undo_vote = False
+            like_type = True
+            if selection.startswith('comment_dislike'):
+                like_type = False
+            #check for duplicate like
+            like = LikeDB.query.filter_by(username=current_user.username, post_or_comment=0, comment_id=selection.split("_")[2]).first()
+
+            #"undo" a like, basically if you click the same thing twice
+            if like is not None and like.like_type is like_type:
+                comment = CommentDB.query.filter_by(id=selection.split("_")[2]).first()
+                db.session.delete(like)
+                db.session.commit()
+
+                if like_type:
+                    comment.num_likes -= 1
+                else:
+                    comment.num_likes += 1
+
+                db.session.commit()
+                return redirect(url_for('post', post_id=post_id))
+
+            #user has not voted before
+            if like is None:
+                like = LikeDB(username=current_user.username, post_or_comment=0, comment_id=selection.split("_")[2], like_type=like_type)
+                db.session.add(like)
+                db.session.commit()
+
+            #user voted the opposite way before
+            if like is not None and like.like_type is not like_type:
+                #update if different type of like
+                like.like_type = like_type
+                #delete old like
+                db.session.delete(like)
+                db.session.commit()
+                like = LikeDB(username=current_user.username, post_or_comment=0, comment_id=selection.split("_")[2], like_type=like_type)
+                db.session.add(like)
+                db.session.commit()
+
+            #update the comment's number of likes
+            comment = CommentDB.query.filter_by(id=selection.split("_")[2]).first()
+            if like_type:
+                comment.num_likes += 1
+            else:
+                comment.num_likes -= 1
+
+            db.session.commit()
+            return redirect (url_for('post', post_id=post_id))
+        #user is adding a comment
         author = current_user.username
         time = datetime.now()
         comment = CommentDB(content=content, author=author, post_id=post_id, num_likes=0, time=time)
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('post',post_id=post_id))
+        return redirect(url_for('post', post_id=post_id))
 
 
 @app.route('/logout')

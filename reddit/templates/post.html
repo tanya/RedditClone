@@ -41,6 +41,21 @@
 
 <h2>Comments:</h2>
 {% for comment in comments %}
+
+  {% if current_user.is_authenticated %}
+  <form action="{{ url_for('post', post_id=post.id) }}" method="post">
+    <button class="" style="background-color: Transparent; border: none;"name="selection" type="submit" value="comment_like_{{ comment.id}}">
+      <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+    </button>
+    {% endif %}
+    <h3 style="text-align: center; margin: 0 0 0 0;">{{ comment.num_likes }} </h3>
+    {% if current_user.is_authenticated %}
+    <button class="" style="background-color: Transparent; border: none;" name="selection" type="submit" value="comment_dislike_{{ comment.id}}">
+      <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+    </button>
+  </form>
+  {% endif %}
+
   <h1>{{ comment.title }}</h1>
   <h3>{{ comment.content }}</h3>
   <p>Submitted by {{ comment.author }}</p>
