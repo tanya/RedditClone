@@ -223,6 +223,34 @@ def post(post_id):
             db.session.commit()
         return redirect(url_for('post',post_id=post_id))
 
+@app.route('/users/<username>', methods=['GET','POST'])
+def profile(username):
+    if request.method == 'GET':
+        user = UserDB.query.filter_by(username=username).first()
+        if user is None:
+            return render_template('error.html', error="That user doesn't exist!")
+        posts = PostDB.query.filter_by(author=username).all()
+        return render_template('profile.html', posts=posts)
+    if request.method == 'POST':
+        selection = request.form.get('selection')
+        if selection == 'posts':
+            posts = PostDB.query.filter_by(author=username).all()
+            if posts is None:
+                return render_template('profile.html', message="No posts yet!")
+            return render_template('profile.html', posts=posts)
+        elif selection == 'likes':
+            like_ids = map(lambda x: x.post_id, LikeDB.query.filter_by(username=username, post_or_comment=1, like_type=True).all())
+            if like_ids is None:
+                return render_template('profile.html', message="No likes yet!")
+            posts = map(lambda x: PostDB.query.filter_by(id=x).all(), like_ids)
+            return render_template('profile.html', post_like=posts)
+        elif selection == 'comments':
+            comments = CommentDB.query.filter_by(author=username).all()
+            if comments is None:
+                return render_template('profile.html', message="No comments yet!")
+            post_ids = map(lambda x: x.post_id, comments)
+            posts = map(lambda x: PostDB.query.filter_by(id=x).all(), post_ids)
+            return render_template('profile.html', comments=comments, posts=posts, PostDB=PostDB)
 
 @app.route('/logout')
 @login_required

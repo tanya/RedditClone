@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+ 
+{% block content %}
+{% if message %}
+  <p>{{ message }}</p>
+{% endif %}
+
+<style type="text/css">
+  tab1 { padding-left: 4em; }
+  i {text-align: center; }
+  hr { height: 50px; }
+</style>
+
+<form  method="post">
+  <button class="btn btn-info-outline" name="selection" type="submit" value="posts">Posts</button>
+  <button class="btn btn-info-outline" name="selection" type="submit" value="comments">Comments</button>
+  <button class="btn btn-info-outline" name="selection" type="submit" value="likes">Liked</button>
+</form>
+<br>
+   {% if posts and comments is none %}
+      {% for post in posts %}
+        <h2>{{ post.num_likes }}</h2>
+        <h2>{{post.title}}</a></h2>
+        <p>{{post.content}}</p>
+      {% endfor %}
+    {% elif comments %}
+        <h1>Comments</h1>
+        <hr>
+      {% for comment in comments %}
+        <h2><a href= "{{ url_for('post', post_id=comment.post_id) }}">{{ PostDB.query.filter_by(id=comment.post_id).first().title }}</a></h2> 
+        <p>{{comment.content}}</p> 
+        <i>{{ comment.num_likes }} Likes</i>
+        <hr>
+      {% endfor %}
+    {% elif post_like %}
+          {% for post in post_like %}
+              <h2>{{ post[0].num_likes }}</h2>
+              <h2><a>{{post[0].title}}</a></h2>
+              <p>{{post[0].content}}</p>
+          {% endfor %}
+    {% else %}
+          <h2>Empty!</h2>
+    {% endif %}
+
+{% endblock %}
