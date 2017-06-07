@@ -2,15 +2,16 @@
 {% block content %}
 
 {% if current_user.is_authenticated %}
-  <h2>Hello, {{current_user.username}}!</h2>
+  <h1><i>Hello, {{current_user.username}}!</i></h1>
 {% else %}
-  <h2>You're not signed in!</h2>
+<h1><i>You're not signed in!</i></h1>
 {% endif %}
-
+<br><br>
+<h1><u>Top Posts</u></h1><br>
 {% for post in posts %}
-  <h1>{{ post.title }}</h1>
-  <h3>{{ post.content }}</h3>
+<a href="{{ url_for('post',post_id=post.id) }}"><h2><b>{{ post.title }}</b></h2></a>
+  <!-- <h3>{{ post.content }}</h3> -->
   <p>Submitted by {{post.author}}</p>
-  <br><br>
+  <br>
 {% endfor %}
 {% endblock %}
